@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
@@ -28,21 +29,27 @@ type Response struct {
 }
 
 func main() {
+	token := os.Getenv("TOKEN")
+
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Pong")
 	})
-	e.GET("/gpt", func(c echo.Context) error {
+	e.GET("/introduce", func(c echo.Context) error {
+		if c.Request().Header.Get("Authorization") != "Bearer "+token {
+			return c.String(http.StatusUnauthorized, "Unauthorized")
+		}
+
 		data := `{
 			"model": "gpt-3.5-turbo",
 			"messages": [
 				{
 					"role": "system",
-					"content": "You are a cute robot companion and show a lot of emotions."
+					"content": "You are a cute robot companion and show a lot of emotions. End every message with a smiley face representing the emotion you are feeling."
 				},
 				{
 					"role": "user",
-					"content": "Hello I am your owner"
+					"content": "Hello I am your owner, can you present yourself and explain what you can do ?"
 				}
 			]
 		}`
