@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -30,7 +29,8 @@ type Response struct {
 }
 
 func main() {
-	token := os.Getenv("TOKEN")
+	// token := os.Getenv("TOKEN")
+	token := "lolipop"
 
 	e := echo.New()
 	e.Use(middleware.CORS())
@@ -61,7 +61,7 @@ func main() {
 
 		// If there is an error with our request
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		// Add the API key and content type as headers
@@ -74,21 +74,23 @@ func main() {
 
 		// Handle the error
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		// Read the response body
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		// Unmarshal the JSON response
 		var response Response
 		err = json.Unmarshal(body, &response)
 		if err != nil {
-			log.Fatalln(err)
+			// log the erorr wthout exiting
+			log.Println(err)
+			return c.String(http.StatusInternalServerError, "Error while getting data from delta OpenAI")
 		}
 
 		// Get the AI's message content
