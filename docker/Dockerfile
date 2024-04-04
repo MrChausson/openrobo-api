@@ -9,7 +9,7 @@ RUN go mod download && go mod verify
 
 COPY . /app
 
-RUN cd /app/ && go build -v -o /usr/local/bin/openrobo-api
+RUN cd /app/ && go build ./src -v -o /usr/local/bin/openrobo-api
 
 
 #FROM gcr.io/distroless/static:debug
