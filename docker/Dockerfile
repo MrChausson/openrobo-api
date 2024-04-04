@@ -1,5 +1,5 @@
 #Dockerfile for Echo API made in golang
-FROM golang:1.21-rc-alpine AS build
+FROM golang:1.22.2-alpine3.19 AS build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN go mod download && go mod verify
 
 COPY . /app
 
-RUN cd /app/ && go build ./src -v -o /usr/local/bin/openrobo-api
+RUN cd /app/src && go build -v -o /usr/local/bin/openrobo-api
 
 
 #FROM gcr.io/distroless/static:debug
