@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"openrobo-api/src/config"
 
+	"github.com/forPelevin/gomoji"
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,6 +16,8 @@ func IntroduceHandler(c echo.Context) error {
 	if c.Request().Header.Get("Authorization") != "Bearer "+config.Token {
 		return c.String(http.StatusUnauthorized, "Unauthorized")
 	}
+
+	smiley := c.QueryParam("smiley")
 
 	data := `{
 		"model": "gpt-3.5-turbo",
@@ -69,6 +72,11 @@ func IntroduceHandler(c echo.Context) error {
 
 	// Get the AI's message content
 	aiMessage := response.Choices[0].Message.Content
+
+	if smiley != "yes" {
+		//remove all smileys from the message
+		aiMessage = gomoji.RemoveEmojis(aiMessage)
+	}
 
 	return c.String(http.StatusOK, aiMessage)
 }
