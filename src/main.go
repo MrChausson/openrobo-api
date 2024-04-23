@@ -15,5 +15,6 @@ func main() {
 		return c.String(http.StatusOK, "Pong")
 	})
 	e.GET("/introduce", handler.IntroduceHandler)
+	e.GET("/ask", handler.AskHandler)
 	e.Logger.Fatal(e.Start(":8080"))
 }
