@@ -17,6 +17,9 @@ func IntroduceHandler(c echo.Context) error {
 
 	smiley := c.QueryParam("smiley")
 
+	//Let's reset the conversation
+	aiclient.Reset()
+
 	// Get the AI's message content
 	aiMessage, err := aiclient.Ask("Hello I am your owner, can you present yourself and explain what you can do ?")
 	if err != nil {

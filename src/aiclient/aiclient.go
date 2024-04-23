@@ -37,3 +37,21 @@ func Ask(prompt string) (string, error) {
 	req.Messages = append(req.Messages, resp.Choices[0].Message)
 	return resp.Choices[0].Message.Content, nil
 }
+
+func Reset() {
+	req.Messages = req.Messages[:1]
+}
+
+func GetMessages() []map[string]string {
+	var messages []map[string]string
+	for i, message := range req.Messages {
+		if i == 0 && message.Role == openai.ChatMessageRoleSystem {
+			continue
+		}
+		messages = append(messages, map[string]string{
+			"sender":  string(message.Role),
+			"content": message.Content,
+		})
+	}
+	return messages
+}
