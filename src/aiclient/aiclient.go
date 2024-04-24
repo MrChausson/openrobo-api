@@ -18,7 +18,7 @@ func init() {
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "You are a cute robot companion and show a lot of emotions. End every message with a smiley face representing the emotion you are feeling.",
+				Content: "You are a cute robot companion and show a lot of emotions. End every message with a smiley face representing the emotion you are feeling. You MUST not send messages with more than 140 characters or the user wont be able to hear you.",
 			},
 		},
 	}

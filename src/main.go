@@ -17,5 +17,6 @@ func main() {
 	e.GET("/introduce", handler.IntroduceHandler)
 	e.GET("/ask", handler.AskHandler)
 	e.GET("/history", handler.HistoryHandler)
+	e.POST("/text-to-speech", handler.TextToSpeechHandler)
 	e.Logger.Fatal(e.Start(":8080"))
 }
