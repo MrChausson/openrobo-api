@@ -1,5 +1,9 @@
-#Dockerfile for Echo API made in golang
-FROM golang:1.22.2-alpine3.19 AS build
+#Dockerfile for OpenRobo API made in golang
+FROM golang:1.22.2 AS build
+
+RUN apt update
+
+RUN apt install -y libasound2-dev
 
 WORKDIR /app
 
@@ -11,12 +15,4 @@ COPY . /app
 
 RUN cd /app/src && go build -v -o /usr/local/bin/openrobo-api
 
-
-#FROM gcr.io/distroless/static:debug
-FROM golang:alpine
-
-WORKDIR /app
-
-COPY --from=build /usr/local/bin/openrobo-api /app/openrobo-api
-
-ENTRYPOINT ["/app/openrobo-api"]
+ENTRYPOINT ["/usr/local/bin/openrobo-api"]
