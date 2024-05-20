@@ -21,7 +21,7 @@ func IntroduceHandler(c echo.Context) error {
 	aiclient.Reset()
 
 	// Get the AI's message content
-	aiMessage, err := aiclient.Ask("Hello I am your owner, can you present yourself and explain what you can do ?")
+	aiMessage, err := aiclient.Ask("Hello I am your owner, can you present yourself and explain what you can do ? Please don't forget to keep answers very short")
 	if err != nil {
 		log.Println(err)
 		return c.String(http.StatusInternalServerError, "Error while getting data from delta OpenAI: "+err.Error())
