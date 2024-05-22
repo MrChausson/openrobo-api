@@ -10,7 +10,7 @@ import (
 
 var client *openai.Client
 var req openai.ChatCompletionRequest
-var newMessage = make(chan struct{})
+var newMessage = make(chan struct{}, 1)
 
 func init() {
 	client = openai.NewClient(config.OpenAIKey)
@@ -62,7 +62,10 @@ func AddMessageToRequest(message openai.ChatCompletionMessage) {
 	req.Messages = append(req.Messages, message)
 
 	// Signal that a new message has been added
-	newMessage <- struct{}{}
+	select {
+	case newMessage <- struct{}{}:
+	default:
+	}
 }
 
 func GetNewMessageChannel() chan struct{} {

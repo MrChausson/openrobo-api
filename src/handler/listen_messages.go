@@ -82,10 +82,12 @@ func (ev *Event) MarshalTo(w io.Writer) error {
 }
 
 func ListenMessageHandler(c echo.Context) error {
-	if c.Request().Header.Get("Authorization") != "Bearer "+config.Token {
+	authHeader := c.Request().Header.Get("Authorization")
+	queryToken := c.QueryParam("token")
+
+	if authHeader != "Bearer "+config.Token && queryToken != config.Token {
 		return c.String(http.StatusUnauthorized, "Unauthorized")
 	}
-
 
 	log.Printf("SSE client connected, ip: %v", c.RealIP())
 
