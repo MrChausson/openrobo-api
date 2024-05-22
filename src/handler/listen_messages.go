@@ -13,6 +13,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var clients = make(map[echo.Context]bool)
+
 // Event represents Server-Sent Event.
 // SSE explanation: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format
 type Event struct {
@@ -95,12 +97,16 @@ func ListenMessageHandler(c echo.Context) error {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
+	// Add this client to the global list
+	clients[c] = true
 
 	newMessage := aiclient.GetNewMessageChannel()
 
 	for {
 		select {
 		case <-c.Request().Context().Done():
+			// Remove this client from the global list
+			delete(clients, c)
 			log.Printf("SSE client disconnected, ip: %v", c.RealIP())
 			return nil
 		case <-newMessage:
@@ -114,10 +120,14 @@ func ListenMessageHandler(c echo.Context) error {
 				event := Event{
 					Data: jsonMessage,
 				}
-				if err := event.MarshalTo(w); err != nil {
-					return err
+				// Iterate over all connected clients and send the message
+				for client := range clients {
+					w := client.Response()
+					if err := event.MarshalTo(w); err != nil {
+						return err
+					}
+					w.Flush()
 				}
-				w.Flush()
 			}
 		}
 	}
