@@ -10,6 +10,7 @@ import (
 
 var client *openai.Client
 var req openai.ChatCompletionRequest
+var newMessage = make(chan struct{})
 
 func init() {
 	client = openai.NewClient(config.OpenAIKey)
@@ -25,7 +26,7 @@ func init() {
 }
 
 func Ask(prompt string) (string, error) {
-	req.Messages = append(req.Messages, openai.ChatCompletionMessage{
+	AddMessageToRequest(openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleUser,
 		Content: prompt,
 	})
@@ -34,7 +35,7 @@ func Ask(prompt string) (string, error) {
 		fmt.Printf("ChatCompletion error: %v\n", err)
 		return "ChatCompletion error", err
 	}
-	req.Messages = append(req.Messages, resp.Choices[0].Message)
+	AddMessageToRequest(resp.Choices[0].Message)
 	return resp.Choices[0].Message.Content, nil
 }
 
@@ -54,4 +55,27 @@ func GetMessages() []map[string]string {
 		})
 	}
 	return messages
+}
+
+func AddMessageToRequest(message openai.ChatCompletionMessage) {
+	// Add the message to the request
+	req.Messages = append(req.Messages, message)
+
+	// Signal that a new message has been added
+	newMessage <- struct{}{}
+}
+
+func GetNewMessageChannel() chan struct{} {
+	return newMessage
+}
+
+func GetLastMessage() map[string]string {
+	if len(req.Messages) > 0 {
+		message := req.Messages[len(req.Messages)-1]
+		return map[string]string{
+			"sender":  string(message.Role),
+			"content": message.Content,
+		}
+	}
+	return nil
 }
